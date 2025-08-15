@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alert Stream Service - WebSocket 테스트</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fafafa;
+        }
+        .test-section h3 {
+            color: #34495e;
+            margin-top: 0;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .status.connected {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.disconnected {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .status.connecting {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        .log-container {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 4px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 2px 0;
+        }
+        .log-entry.info { color: #3498db; }
+        .log-entry.success { color: #2ecc71; }
+        .log-entry.error { color: #e74c3c; }
+        .log-entry.warning { color: #f39c12; }
+        .clear-btn {
+            background-color: #e74c3c;
+            margin-top: 10px;
+        }
+        .clear-btn:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Alert Stream Service - WebSocket 테스트</h1>
+        
+        <!-- 연결 설정 섹션 -->
+        <div class="test-section">
+            <h3>🔌 WebSocket 연결 설정</h3>
+            <div class="form-group">
+                <label for="wsUrl">WebSocket URL:</label>
+                <input type="text" id="wsUrl" value="ws://localhost:8080/ws" placeholder="WebSocket URL">
+            </div>
+            <div class="form-group">
+                <label for="customerId">고객사 ID:</label>
+                <input type="text" id="customerId" value="test-customer-1" placeholder="고객사 ID">
+            </div>
+            <div class="form-group">
+                <label for="token">인증 토큰:</label>
+                <input type="text" id="token" value="test-token-1" placeholder="인증 토큰">
+            </div>
+            <button id="connectBtn" onclick="connectWebSocket()">연결</button>
+            <button id="disconnectBtn" onclick="disconnectWebSocket()" disabled>연결 해제</button>
+            <div id="connectionStatus" class="status disconnected">연결되지 않음</div>
+        </div>
+
+        <!-- 인증 테스트 섹션 -->
+        <div class="test-section">
+            <h3>🔐 고객사 인증 테스트</h3>
+            <button id="authBtn" onclick="sendAuthRequest()" disabled>인증 요청</button>
+            <button id="statusBtn" onclick="checkStatus()" disabled>연결 상태 확인</button>
+            <div id="authStatus" class="status">인증 상태: 대기 중</div>
+        </div>
+
+        <!-- 메시지 전송 테스트 섹션 -->
+        <div class="test-section">
+            <h3>📨 메시지 전송 테스트</h3>
+            <div class="form-group">
+                <label for="messageText">테스트 메시지:</label>
+                <input type="text" id="messageText" value="안녕하세요! 테스트 메시지입니다." placeholder="테스트 메시지">
+            </div>
+            <button id="sendMessageBtn" onclick="sendTestMessage()" disabled>메시지 전송</button>
+        </div>
+
+        <!-- 실시간 뉴스 테스트 섹션 -->
+        <div class="test-section">
+            <h3>📰 실시간 뉴스 테스트</h3>
+            <p>뉴스 ID를 큐에 추가하여 실시간 전송을 테스트할 수 있습니다.</p>
+            <div class="form-group">
+                <label for="newsId">뉴스 ID:</label>
+                <input type="text" id="newsId" value="test-news-001" placeholder="뉴스 ID">
+            </div>
+            <button id="addNewsBtn" onclick="addNewsToQueue()" disabled>뉴스 ID 큐 추가</button>
+            <div id="newsStatus" class="status">뉴스 상태: 대기 중</div>
+        </div>
+
+        <!-- 로그 섹션 -->
+        <div class="test-section">
+            <h3>📋 연결 로그</h3>
+            <div id="logContainer" class="log-container">
+                <div class="log-entry info">WebSocket 테스트 페이지가 로드되었습니다.</div>
+                <div class="log-entry info">연결을 시작하려면 위의 설정을 확인하고 '연결' 버튼을 클릭하세요.</div>
+            </div>
+            <button class="clear-btn" onclick="clearLog()">로그 지우기</button>
+        </div>
+    </div>
+
+    <script>
+        let socket = null;
+        let isConnected = false;
+        let isAuthenticated = false;
+
+        // 로그 함수
+        function addLog(message, type = 'info') {
+            const logContainer = document.getElementById('logContainer');
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        // 로그 지우기
+        function clearLog() {
+            document.getElementById('logContainer').innerHTML = '';
+            addLog('로그가 지워졌습니다.', 'info');
+        }
+
+        // WebSocket 연결
+        function connectWebSocket() {
+            const wsUrl = document.getElementById('wsUrl').value;
+            const customerId = document.getElementById('customerId').value;
+            const token = document.getElementById('token').value;
+
+            if (!wsUrl || !customerId || !token) {
+                addLog('연결 정보를 모두 입력해주세요.', 'error');
+                return;
+            }
+
+            try {
+                updateConnectionStatus('연결 중...', 'connecting');
+                addLog(`WebSocket 연결 시도: ${wsUrl}`, 'info');
+
+                socket = new WebSocket(wsUrl);
+
+                socket.onopen = function(event) {
+                    isConnected = true;
+                    updateConnectionStatus('연결됨', 'connected');
+                    updateButtonStates();
+                    addLog('WebSocket 연결 성공!', 'success');
+                };
+
+                socket.onmessage = function(event) {
+                    try {
+                        const data = JSON.parse(event.data);
+                        addLog(`메시지 수신: ${JSON.stringify(data, null, 2)}`, 'success');
+                        
+                        // 인증 응답 처리
+                        if (data.success !== undefined) {
+                            if (data.success) {
+                                isAuthenticated = true;
+                                document.getElementById('authStatus').textContent = '인증 상태: 성공';
+                                document.getElementById('authStatus').className = 'status connected';
+                                addLog('고객사 인증 성공!', 'success');
+                            } else {
+                                isAuthenticated = false;
+                                document.getElementById('authStatus').textContent = '인증 상태: 실패';
+                                document.getElementById('authStatus').className = 'status disconnected';
+                                addLog(`인증 실패: ${data.message}`, 'error');
+                            }
+                        }
+                    } catch (e) {
+                        addLog(`메시지 파싱 오류: ${event.data}`, 'error');
+                    }
+                };
+
+                socket.onclose = function(event) {
+                    isConnected = false;
+                    isAuthenticated = false;
+                    updateConnectionStatus('연결 해제됨', 'disconnected');
+                    updateButtonStates();
+                    addLog(`WebSocket 연결 해제: ${event.code} - ${event.reason}`, 'warning');
+                };
+
+                socket.onerror = function(error) {
+                    addLog(`WebSocket 오류: ${error}`, 'error');
+                    updateConnectionStatus('연결 오류', 'disconnected');
+                };
+
+            } catch (error) {
+                addLog(`연결 오류: ${error.message}`, 'error');
+                updateConnectionStatus('연결 오류', 'disconnected');
+            }
+        }
+
+        // WebSocket 연결 해제
+        function disconnectWebSocket() {
+            if (socket) {
+                socket.close();
+                socket = null;
+            }
+        }
+
+        // 연결 상태 업데이트
+        function updateConnectionStatus(message, className) {
+            const statusElement = document.getElementById('connectionStatus');
+            statusElement.textContent = message;
+            statusElement.className = `status ${className}`;
+        }
+
+        // 버튼 상태 업데이트
+        function updateButtonStates() {
+            document.getElementById('connectBtn').disabled = isConnected;
+            document.getElementById('disconnectBtn').disabled = !isConnected;
+            document.getElementById('authBtn').disabled = !isConnected;
+            document.getElementById('statusBtn').disabled = !isConnected;
+            document.getElementById('sendMessageBtn').disabled = !isConnected || !isAuthenticated;
+            document.getElementById('addNewsBtn').disabled = !isConnected || !isAuthenticated;
+        }
+
+        // 인증 요청 전송
+        function sendAuthRequest() {
+            if (!socket || !isConnected) {
+                addLog('WebSocket이 연결되지 않았습니다.', 'error');
+                return;
+            }
+
+            const customerId = document.getElementById('customerId').value;
+            const token = document.getElementById('token').value;
+
+            const authMessage = {
+                destination: '/app/auth',
+                body: JSON.stringify({
+                    customerId: customerId,
+                    token: token
+                })
+            };
+
+            try {
+                socket.send(JSON.stringify(authMessage));
+                addLog('인증 요청 전송됨', 'info');
+                document.getElementById('authStatus').textContent = '인증 상태: 요청 중...';
+                document.getElementById('authStatus').className = 'status connecting';
+            } catch (error) {
+                addLog(`인증 요청 전송 실패: ${error.message}`, 'error');
+            }
+        }
+
+        // 연결 상태 확인
+        function checkStatus() {
+            if (!socket || !isConnected) {
+                addLog('WebSocket이 연결되지 않았습니다.', 'error');
+                return;
+            }
+
+            const statusMessage = {
+                destination: '/app/status'
+            };
+
+            try {
+                socket.send(JSON.stringify(statusMessage));
+                addLog('연결 상태 확인 요청 전송됨', 'info');
+            } catch (error) {
+                addLog(`상태 확인 요청 전송 실패: ${error.message}`, 'error');
+            }
+        }
+
+        // 테스트 메시지 전송
+        function sendTestMessage() {
+            if (!socket || !isConnected || !isAuthenticated) {
+                addLog('인증이 필요합니다.', 'error');
+                return;
+            }
+
+            const messageText = document.getElementById('messageText').value;
+            addLog(`테스트 메시지 전송: ${messageText}`, 'info');
+            // 실제 구현에서는 STOMP 메시지 형식으로 전송
+        }
+
+        // 뉴스 ID를 큐에 추가
+        function addNewsToQueue() {
+            if (!socket || !isConnected || !isAuthenticated) {
+                addLog('인증이 필요합니다.', 'error');
+                return;
+            }
+
+            const newsId = document.getElementById('newsId').value;
+            
+            // REST API를 통해 뉴스 ID를 큐에 추가
+            fetch(`http://localhost:8080/api/v1/queue/news?newsId=${encodeURIComponent(newsId)}`, {
+                method: 'POST'
+            })
+            .then(response => response.text())
+            .then(data => {
+                addLog(`뉴스 ID 큐 추가 결과: ${data}`, 'success');
+                document.getElementById('newsStatus').textContent = `뉴스 상태: ${data}`;
+                document.getElementById('newsStatus').className = 'status connected';
+            })
+            .catch(error => {
+                addLog(`뉴스 ID 큐 추가 실패: ${error.message}`, 'error');
+                document.getElementById('newsStatus').textContent = '뉴스 상태: 실패';
+                document.getElementById('newsStatus').className = 'status disconnected';
+            });
+        }
+
+        // 페이지 로드 시 초기화
+        window.onload = function() {
+            addLog('WebSocket 테스트 페이지가 로드되었습니다.', 'info');
+            updateButtonStates();
+        };
+
+        // 페이지 언로드 시 연결 해제
+        window.onbeforeunload = function() {
+            if (socket) {
+                socket.close();
+            }
+        };
+    </script>
+</body>
+</html>

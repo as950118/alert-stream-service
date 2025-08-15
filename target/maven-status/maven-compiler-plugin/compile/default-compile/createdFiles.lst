@@ -1,0 +1,13 @@
+com/alert/news/repository/CustomerRepository.class
+com/alert/news/websocket/NewsWebSocketHandler.class
+com/alert/news/controller/CustomerController.class
+com/alert/news/queue/NewsQueueProcessor.class
+com/alert/news/model/Customer.class
+com/alert/news/config/WebSocketConfig.class
+com/alert/news/dto/NewsMessage.class
+com/alert/news/controller/NewsController.class
+com/alert/news/dto/CustomerAuthRequest.class
+com/alert/news/repository/TranslatedNewsRepository.class
+com/alert/news/AlertStreamServiceApplication.class
+com/alert/news/service/NewsWebSocketService.class
+com/alert/news/model/TranslatedNews.class

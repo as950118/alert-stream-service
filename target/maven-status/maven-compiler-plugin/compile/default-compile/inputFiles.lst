@@ -1,0 +1,13 @@
+/Users/heonjinjeong/IdeaProjects/alert-stream-service/src/main/java/com/alert/news/queue/NewsQueueProcessor.java
+/Users/heonjinjeong/IdeaProjects/alert-stream-service/src/main/java/com/alert/news/controller/CustomerController.java
+/Users/heonjinjeong/IdeaProjects/alert-stream-service/src/main/java/com/alert/news/repository/TranslatedNewsRepository.java
+/Users/heonjinjeong/IdeaProjects/alert-stream-service/src/main/java/com/alert/news/dto/NewsMessage.java
+/Users/heonjinjeong/IdeaProjects/alert-stream-service/src/main/java/com/alert/news/websocket/NewsWebSocketHandler.java
+/Users/heonjinjeong/IdeaProjects/alert-stream-service/src/main/java/com/alert/news/dto/CustomerAuthRequest.java
+/Users/heonjinjeong/IdeaProjects/alert-stream-service/src/main/java/com/alert/news/AlertStreamServiceApplication.java
+/Users/heonjinjeong/IdeaProjects/alert-stream-service/src/main/java/com/alert/news/controller/NewsController.java
+/Users/heonjinjeong/IdeaProjects/alert-stream-service/src/main/java/com/alert/news/service/NewsWebSocketService.java
+/Users/heonjinjeong/IdeaProjects/alert-stream-service/src/main/java/com/alert/news/repository/CustomerRepository.java
+/Users/heonjinjeong/IdeaProjects/alert-stream-service/src/main/java/com/alert/news/model/TranslatedNews.java
+/Users/heonjinjeong/IdeaProjects/alert-stream-service/src/main/java/com/alert/news/model/Customer.java
+/Users/heonjinjeong/IdeaProjects/alert-stream-service/src/main/java/com/alert/news/config/WebSocketConfig.java
