@@ -68,8 +68,8 @@ WebSocket, 메시지 큐, 실시간 통신 등 백엔드 개발의 핵심 기술
 
 1. **저장소 클론**
 ```bash
-git clone https://github.com/your-username/qraft-news-service.git
-cd qraft-news-service
+git clone https://github.com/your-username/alert-news-service.git
+cd alert-news-service
 ```
 
 2. **Docker 환경 실행**
@@ -90,11 +90,11 @@ http://localhost:8080/swagger-ui.html
 ## 📁 프로젝트 구조
 
 ```
-qraft-news-service/
+alert-news-service/
 ├── src/
 │   ├── main/
 │   │   ├── java/
-│   │   │   └── com/qraft/news/
+│   │   │   └── com/alert/news/
 │   │   │       ├── config/          # 설정 클래스
 │   │   │       ├── controller/      # REST API 컨트롤러
 │   │   │       ├── websocket/       # WebSocket 핸들러 및 메시지 처리
@@ -123,8 +123,8 @@ qraft-news-service/
 ```json
 {
   "id": "a1b2c3",
-  "title": "Qraft AI Product팀 개발자 채용",
-  "body": "핀테크 스타트업 크래프트 테크놀로지스(QRAFT Technologies)는...",
+  "title": "alert AI Product팀 개발자 채용",
+  "body": "핀테크 스타트업 크래프트 테크놀로지스(alert Technologies)는...",
   "publishedAt": "2025-06-05T10:00:00"
 }
 ```
@@ -199,7 +199,7 @@ qraft-news-service/
 # 데이터베이스 설정
 DB_HOST=localhost
 DB_PORT=5432
-DB_NAME=qraft_news
+DB_NAME=alert_news
 DB_USERNAME=postgres
 DB_PASSWORD=password
 
@@ -219,7 +219,7 @@ CUSTOMER_TOKEN_EXPIRY_HOURS=24
 ```yaml
 logging:
   level:
-    com.qraft.news: DEBUG
+    com.alert.news: DEBUG
     org.springframework.web.socket: DEBUG
     org.springframework.messaging: DEBUG
 ```
@@ -228,12 +228,12 @@ logging:
 
 ### Docker 이미지 빌드
 ```bash
-docker build -t qraft-news-service:latest .
+docker build -t alert-news-service:latest .
 ```
 
 ### Docker 이미지 실행
 ```bash
-docker run -p 8080:8080 qraft-news-service:latest
+docker run -p 8080:8080 alert-news-service:latest
 ```
 
 ### Docker Compose로 전체 환경 실행
