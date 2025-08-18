@@ -62,7 +62,7 @@ WebSocket, 메시지 큐, 실시간 통신 등 백엔드 개발의 핵심 기술
 ### Prerequisites
 - Java 21+ (Virtual Threads 지원)
 - Docker & Docker Compose
-- Maven 3.8+
+- Gradle 8.0+
 
 ### 설치 및 실행
 
@@ -79,7 +79,17 @@ docker-compose up -d
 
 3. **애플리케이션 실행**
 ```bash
-./mvnw spring-boot:run
+./gradlew bootRun
+```
+
+4. **빌드**
+```bash
+./gradlew build
+```
+
+5. **테스트 실행**
+```bash
+./gradlew test
 ```
 
 4. **API 문서 확인**
@@ -111,7 +121,9 @@ alert-news-service/
 │   └── test/                        # 테스트 코드
 ├── docker-compose.yml               # Docker 환경 설정
 ├── Dockerfile                       # 애플리케이션 Docker 이미지
-└── pom.xml                         # Maven 의존성 관리
+├── build.gradle                     # Gradle 빌드 설정
+├── settings.gradle                  # Gradle 프로젝트 설정
+└── gradle/                          # Gradle Wrapper
 ```
 
 ## 🔌 API 엔드포인트
@@ -167,17 +179,17 @@ alert-news-service/
 
 ### 단위 테스트 실행
 ```bash
-./mvnw test
+./gradlew test
 ```
 
 ### 통합 테스트 실행
 ```bash
-./mvnw verify
+./gradlew integrationTest
 ```
 
 ### 테스트 커버리지 확인
 ```bash
-./mvnw jacoco:report
+./gradlew jacocoTestReport
 ```
 
 ## 📊 모니터링
